@@ -16,7 +16,10 @@ export async function handleWebhook(req, res, next) {
     if (!incoming) return;
     const customer = await findOrCreateCustomer(incoming.phone, incoming.name);
     const result = await receiveMessage(customer, incoming.text);
+    console.log('result from receiveMessage', result);
     const body = await sendResponse(incoming.phone, result.response);
+    console.log('body from sendResponse', body);
     await recordOutbound(result.conversation.id, body);
+    console.log('body from recordOutbound', body);
   } catch (error) { next(error); }
 }
