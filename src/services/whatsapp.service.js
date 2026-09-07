@@ -8,8 +8,13 @@ export async function sendResponse(to, response) {
     payload.type = 'interactive';
     payload.interactive = { type: 'list', body: { text: response.question }, action: { button: 'Choose an option', sections: [{ title: 'Options', rows: response.options.map((o) => ({ id: o.id, title: o.label.slice(0, 24), description: o.description?.slice(0, 72) })) }] } };
   }
-  await axios.post(endpoint, payload, { headers: { Authorization: `Bearer ${env.accessToken}`, 'Content-Type': 'application/json' } });
-  return response.question;
+  try {
+    await axios.post(endpoint, payload, { headers: { Authorization: `Bearer ${env.accessToken}`, 'Content-Type': 'application/json' } });
+    return response.question;
+  } catch (error) {
+    console.error('Error sending response:', error);
+    throw error;
+  }  
 }
 
 export function extractIncomingMessage(value) {
