@@ -12,7 +12,13 @@ export async function sendResponse(to, response) {
     await axios.post(endpoint, payload, { headers: { Authorization: `Bearer ${env.accessToken}`, 'Content-Type': 'application/json' } });
     return response.question;
   } catch (error) {
-    console.error('Error sending response:', error);
+    console.error(
+      'WhatsApp API Error:',
+      JSON.stringify(error.response?.data, null, 2)
+    );
+
+    console.error('HTTP Status:', error.response?.status);
+
     throw error;
   }  
 }
