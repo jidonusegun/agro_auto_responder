@@ -1,0 +1,195 @@
+I want to build a WhatsApp conversational workflow/decision-tree system: the customer asks a question or selects an option, and the system remembers their current step and sends the appropriate next response.
+
+For example:
+
+Customer: Hi
+Bot: Welcome to Agro Farm 👋
+Please choose an option:
+
+1️⃣ Buy fish
+2️⃣ Buy pig
+3️⃣ Buy coconut
+4️⃣ Consultation
+
+Customer: 1
+
+Bot: Great. How kilos.
+Step 1 of 4: Where is your location?
+
+1️⃣ Within Badagry
+2️⃣ Within Lagos
+3️⃣ Ogun State
+
+Customer: 1
+
+Bot: Perfect.
+Step 2 of 4: Please provide the delivery address.
+
+Customer: Aradagun bus stop
+
+Bot: Thanks.
+Step 3 of 4: Please provide your phone number.
+
+…and so on until:
+
+Bot: ✅ We've collected all the required information for your purchase.
+
+How I want to architect it
+
+I want it to be based on Node.js/Express and WhatsApp integrations:
+
+WhatsApp Customer
+       │
+       ▼
+WhatsApp Cloud API
+       │
+       ▼
+Webhook (Node.js)
+       │
+       ▼
+Conversation Engine
+       │
+       ├── Identify customer
+       ├── Get current conversation state
+       ├── Process message/option
+       ├── Determine next step
+       └── Generate response
+       │
+       ▼
+Database
+       │
+       ├── Customer
+       ├── Conversation
+       ├── Current Step
+       ├── Answers
+       └── Conversation History
+       │
+       ▼
+WhatsApp Cloud API
+       │
+       ▼
+Customer
+
+The important part is the conversation state.
+
+For example, the database might contain:
+
+customer_id: 123
+flow: purchase
+current_step: 3
+status: active
+
+answers:
+  purchase_type: "Cat Fish"
+  address: "Aradagun bus stop"
+  phone: "080..."
+
+Then when the customer sends their next message, the backend knows:
+
+"This customer is currently on step 3 of the purchase flow."
+
+So it doesn't have to guess what the customer means.
+
+You can also support different types of responses
+
+For example:
+
+Menu
+
+1. Purchase
+2. Consultation
+3. Booking
+4. Speak to an Agent
+
+Yes/No
+
+Would you like us to continue?
+
+1. Yes
+2. No
+
+Data collection
+
+Please enter your purchase.
+
+Validation
+
+That doesn't appear to be a valid phone number.
+
+Please enter your 11-digit Nigerian phone number.
+
+Conditional branching
+
+Are you an existen customer?
+
+1. Yes
+2. No
+
+If they choose Yes → Step A.
+
+If they choose No → Step B.
+
+This allows to build fairly complex workflows without creating a separate hard-coded conversation for every customer.
+
+I'd recommend something like:
+
+whatsapp-bot/
+│
+├── src/
+│   ├── controllers/
+│   │   └── whatsapp.controller.js
+│   │
+│   ├── services/
+│   │   ├── whatsapp.service.js
+│   │   ├── conversation.service.js
+│   │   └── customer.service.js
+│   │
+│   ├── flows/
+│   │   ├── mainMenu.flow.js
+│   │   ├── registration.flow.js
+│   │   ├── tax.flow.js
+│   │   └── accounting.flow.js
+│   │
+│   ├── models/
+│   │   ├── Customer.js
+│   │   ├── Conversation.js
+│   │   └── ConversationMessage.js
+│   │
+│   └── app.js
+│
+├── .env
+├── package.json
+└── server.js
+
+And eventually, I want to make the flows configuration-driven, so instead of writing code for every question, you could define:
+
+const purchaseFlow = {
+  id: "purchase",
+
+  steps: [
+    {
+      id: "purchase_type",
+      question: "What type of purchase do you want to make?",
+      options: [
+        { id: "purchase_name", label: "Cat fish" },
+        { id: "address", label: "Aradagun bus stop" }
+      ]
+    },
+
+    {
+      id: "purchase_name",
+      question: "What is your location?",
+      type: "text"
+    },
+
+    {
+      id: "phone",
+      question: "Please provide your phone number.",
+      type: "phone"
+    }
+  ]
+};
+
+The conversation engine then automatically moves the customer from one step to the next.
+
+I want to build it from scratch with Node.js + Express + WhatsApp Cloud API + PostgreSQL, including the webhook, interactive WhatsApp buttons/lists, conversation-state database, branching logic, validation, and an admin-friendly way to create new question flows.
