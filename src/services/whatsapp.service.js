@@ -16,9 +16,6 @@ export async function sendResponse(to, response) {
       'WhatsApp API Error:',
       JSON.stringify(error.response?.data, null, 2)
     );
-
-    console.error('HTTP Status:', error.response?.status);
-
     throw error;
   }  
 }

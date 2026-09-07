@@ -27,7 +27,6 @@ export async function receiveMessage(customer, input) {
     const { rows } = await pool.query("INSERT INTO conversations (customer_id, flow_id, current_step, answers) VALUES ($1, 'main_menu', 'main_menu', '{}') RETURNING *", [customer.id]);
     conversation = rows[0];
     await saveMessage(conversation.id, 'inbound', input);
-    console.log('conversation from receiveMessage', conversation);
     return { conversation, response: mainMenu };
   }
 
