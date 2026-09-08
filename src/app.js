@@ -4,14 +4,6 @@ import { listFlows, upsertFlow } from './controllers/admin.controller.js';
 
 export const app = express();
 
-app.use((req, res, next) => {
-    console.log('========== REQUEST RECEIVED ==========');
-    console.log('METHOD:', req.method);
-    console.log('URL:', req.originalUrl);
-    console.log('BODY:', JSON.stringify(req.body, null, 2));
-    next();
-  });
-  
 app.use(express.json());
 app.get('/health', (_, res) => res.json({ ok: true }));
 app.get('/webhook', verifyWebhook);
@@ -23,5 +15,12 @@ app.post('/webhook-test', (req, res) => {
     console.log(JSON.stringify(req.body, null, 2));
   
     res.status(200).json({ received: true });
+  });
+
+  app.post('/meta-debug', (req, res) => {
+    console.log('🔥🔥 REAL META MESSAGE RECEIVED 🔥🔥');
+    console.log(JSON.stringify(req.body, null, 2));
+  
+    res.sendStatus(200);
   });
 app.use((error, _req, _res, _next) => console.error(error));
