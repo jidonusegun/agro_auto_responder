@@ -10,17 +10,4 @@ app.get('/webhook', verifyWebhook);
 app.post('/webhook', handleWebhook);
 app.get('/admin/flows', listFlows);
 app.put('/admin/flows/:id', upsertFlow);
-app.post('/webhook-test', (req, res) => {
-    console.log('🔥 WEBHOOK TEST HIT');
-    console.log(JSON.stringify(req.body, null, 2));
-  
-    res.status(200).json({ received: true });
-  });
-
-  app.post('/meta-debug', (req, res) => {
-    console.log('🔥🔥 REAL META MESSAGE RECEIVED 🔥🔥');
-    console.log(JSON.stringify(req.body, null, 2));
-  
-    res.sendStatus(200);
-  });
 app.use((error, _req, _res, _next) => console.error(error));
