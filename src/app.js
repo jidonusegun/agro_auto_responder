@@ -3,6 +3,15 @@ import { verifyWebhook, handleWebhook } from './controllers/whatsapp.controller.
 import { listFlows, upsertFlow } from './controllers/admin.controller.js';
 
 export const app = express();
+
+app.use((req, res, next) => {
+    console.log('========== REQUEST RECEIVED ==========');
+    console.log('METHOD:', req.method);
+    console.log('URL:', req.originalUrl);
+    console.log('BODY:', JSON.stringify(req.body, null, 2));
+    next();
+  });
+  
 app.use(express.json());
 app.get('/health', (_, res) => res.json({ ok: true }));
 app.get('/webhook', verifyWebhook);
